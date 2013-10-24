@@ -1,6 +1,8 @@
 require 'spec_helper'
 
-describe "User pages" do
+# Added, :type => request after 'describe', to fix an error when calling sign_in user in 'Edit' test
+# NoName error, undefined 'cookies' in utilities when setting cookies[:remember_token] = remember_token
+describe "User pages", :type => :request  do
   subject { page }
    
   describe "index" do
@@ -86,10 +88,10 @@ describe "User pages" do
 
     describe "with valid information" do
       before do
-        fill_in "Name",         with: "Example User"
-        fill_in "Email",        with: "user@example.com"
-        fill_in "Password",     with: "foobar"
-        fill_in "Confirmation", with: "foobar"
+        fill_in "Name",               with: "Example User"
+        fill_in "Email",              with: "user@example.com"
+        fill_in "Password",           with: "foobar"
+        fill_in "Confirm Password",   with: "foobar"
       end
       
       it "should create a user" do
@@ -119,7 +121,6 @@ describe "User pages" do
        visit edit_user_path(user)
     end
       
-
     describe "page" do
       it { should have_content("Update your profile") }
       it { should have_title("Edit user") }
@@ -148,6 +149,18 @@ describe "User pages" do
       it { should have_link('Sign out', href: signout_path) }
       specify { expect(user.reload.name).to  eq new_name }
       specify { expect(user.reload.email).to eq new_email }
+    end
+    
+     describe "forbidden attributes" do
+      let(:params) do
+        { user: { admin: true, password: user.password,
+                  password_confirmation: user.password } }
+      end
+      before do
+        sign_in user, no_capybara: true
+        patch user_path(user), params
+      end
+      specify { expect(user.reload).not_to be_admin }
     end
   end
 end
