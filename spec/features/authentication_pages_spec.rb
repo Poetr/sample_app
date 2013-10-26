@@ -63,6 +63,7 @@ describe "Authentication", :type => :request do
           specify { expect(response).to redirect_to(signin_path) }
         end
       end
+      
        describe "when attempting to visit a protected page" do
         before do
           visit edit_user_path(user)
@@ -92,7 +93,21 @@ describe "Authentication", :type => :request do
           end
         end
       end
-    end
+      
+      describe "in the Microposts controller"
+        
+        describe "submitting to the create action" do
+          before { post microposts_path  }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
+        
+        describe "submitting to  the destroy action" do
+          before { post microposts_path(FactoryGirl.create(:micropost)) }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
+      end
+    
+    
     describe "as wrong user" do
       let(:user) { FactoryGirl.create(:user) }
       let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }

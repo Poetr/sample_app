@@ -9,4 +9,9 @@ FactoryGirl.define do
       admin true
     end
   end
+  
+  factory :micropost do
+    content "Boer Doede is de sjaak."
+    user
+  end
 end
